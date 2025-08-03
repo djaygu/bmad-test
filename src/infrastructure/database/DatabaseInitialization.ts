@@ -100,31 +100,33 @@ export const initializeTablesIfNeeded = Effect.gen(function* () {
   }
 })
 
-// Force initialization with confirmation (for reset scenarios)
+// Force initialization - drops and recreates all tables (destructive)
 export const forceInitializeAllTables = Effect.gen(function* () {
-  console.log("⚠️  FORCE INITIALIZATION - This will recreate all tables!")
+  console.log("⚠️  FORCE INITIALIZATION - Recreating all tables!")
   
+  const sql = yield* SqlClient
   const statuses = yield* getDatabaseStatus
   const existingTables = statuses.filter(s => s.exists)
   
   if (existingTables.length > 0) {
-    console.log("\n💀 This will DELETE the following tables and ALL their data:")
+    console.log("\n💀 Dropping existing tables and ALL their data:")
     existingTables.forEach(table => {
       console.log(`    ${table.name}: ${table.rowCount} rows`)
     })
     
-    // In a real CLI, you'd prompt for confirmation here
-    // For now, we'll require explicit confirmation via command flag
-    return yield* Effect.fail(new Error(
-      "Force initialization requires explicit confirmation. Use --force-confirm flag."
-    ))
+    // Drop all existing tables
+    for (const table of existingTables) {
+      console.log(`  🗑️  Dropping table: ${table.name}`)
+      yield* sql.unsafe(`DROP TABLE IF EXISTS ${table.name}`)
+    }
   }
   
-  // Proceed with table creation
+  // Recreate all tables
+  console.log("\n🔨 Creating fresh tables...")
   yield* createConfigurationTable
   // Add other table creation calls here
   
-  console.log("✓ Force initialization completed")
+  console.log("✓ Force initialization completed - all tables recreated")
 })
 
 // Export table creation registry for extensibility
