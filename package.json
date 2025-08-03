@@ -1,0 +1,46 @@
+{
+  "name": "spx-options-pipeline",
+  "version": "1.0.0",
+  "description": "SPX Options Data Pipeline Tool - CLI-based data acquisition system built on Effect-TS",
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "spx-data": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@effect/cli": "^0.69.0",
+    "@effect/experimental": "^0.54.3",
+    "@effect/platform": "^0.90.0",
+    "@effect/platform-node": "^0.94.0",
+    "@effect/schema": "^0.75.5",
+    "@effect/sql": "^0.44.0",
+    "@effect/sql-sqlite-bun": "^0.45.0",
+    "apache-arrow": "^14.0.2",
+    "better-sqlite3": "^11.7.0",
+    "effect": "^3.17.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/bun": "^1.2.19",
+    "@types/node": "^20.12.12",
+    "@typescript-eslint/eslint-plugin": "^7.11.0",
+    "@typescript-eslint/parser": "^7.11.0",
+    "eslint": "^8.57.0",
+    "fast-check": "^3.19.0",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
+  },
+  "keywords": ["options", "trading", "data-pipeline", "effect-ts", "cli"],
+  "author": "Quantitative Research Team",
+  "license": "MIT"
+}
