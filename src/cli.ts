@@ -4,16 +4,17 @@ import { Command } from "@effect/cli"
 import { NodeContext, NodeRuntime } from "@effect/platform-node"
 import { Effect } from "effect"
 import { configCommand } from "./cli/commands/config"
+import { databaseCommand } from "./cli/commands/database"
 
 // Main CLI Application
 const cliApp = Command.make("spx-data", {}, () => 
   Effect.sync(() => {
     console.log("SPX Options Data Pipeline Tool")
-    console.log("Use 'spx-data config --help' for configuration commands")
+    console.log("Use 'spx-data --help' for available commands")
   })
 ).pipe(
   Command.withDescription("SPX Options Data Pipeline Tool"),
-  Command.withSubcommands([configCommand])
+  Command.withSubcommands([configCommand, databaseCommand])
 )
 
 // Initialize and run the CLI application
