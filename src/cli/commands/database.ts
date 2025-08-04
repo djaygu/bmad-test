@@ -1,12 +1,12 @@
 import { Effect } from "effect"
 import * as Command from "@effect/cli/Command"
 import * as Options from "@effect/cli/Options"
-import { ConfigurationServiceLayer } from "../config/ConfigurationService"
+import { ConfigurationServiceLayer } from "@cli/config/ConfigurationService"
 import { 
   initializeTablesIfNeeded,
   forceInitializeAllTables,
   getDatabaseStatus
-} from "../../infrastructure/database/DatabaseInitialization"
+} from "@infrastructure/database/DatabaseInitialization"
 
 // Database path option
 const databasePathOption = Options.text("database").pipe(

@@ -1,7 +1,7 @@
 import { Effect } from "effect"
 import { SqlClient } from "@effect/sql/SqlClient"
-import { DatabaseConnectionError } from "../../types/errors/ConfigurationError"
-import { createConfigurationTable } from "./ConfigurationRepository"
+import { DatabaseConnectionError } from "@/types/errors/ConfigurationError"
+import { createConfigurationTable } from "@infrastructure/database/ConfigurationRepository"
 
 // Table verification interface
 export interface TableInfo {
@@ -27,8 +27,8 @@ export const checkTableStatus = (tableName: string) =>
     if (exists) {
       // Get row count if table exists
       const countResult = yield* sql.unsafe(`SELECT COUNT(*) as count FROM ${tableName}`)
-      const countRow = Array.isArray(countResult) ? countResult[0] : countResult
-      rowCount = (countRow as any)?.count || 0
+      const countRow = (Array.isArray(countResult) ? countResult[0] : countResult) as {count?: number}
+      rowCount = countRow?.count ?? 0
     }
     
     return {

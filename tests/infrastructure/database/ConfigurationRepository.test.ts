@@ -10,7 +10,7 @@ import {
   getConfigurationWithDefault,
   deleteConfiguration,
   hasConfiguration
-} from '../../../src/infrastructure/database/ConfigurationRepository'
+} from '@infrastructure/database/ConfigurationRepository'
 
 describe('ConfigurationRepository', () => {
   // Create a fresh database for each test

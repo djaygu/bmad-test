@@ -8,7 +8,7 @@ import {
   validateDate,
   validateDirectoryPath,
   validateDatabasePath
-} from '../../../src/types/domain/Configuration'
+} from '@/types/domain/Configuration'
 
 describe('Configuration Schema', () => {
   describe('validateConfiguration', () => {

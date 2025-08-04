@@ -3,8 +3,8 @@
 import { Command } from "@effect/cli"
 import { NodeContext, NodeRuntime } from "@effect/platform-node"
 import { Effect } from "effect"
-import { configCommand } from "./cli/commands/config"
-import { databaseCommand } from "./cli/commands/database"
+import { configCommand } from "@cli/commands/config"
+import { databaseCommand } from "@cli/commands/database"
 
 // Main CLI Application
 const cliApp = Command.make("spx-data", {}, () => 

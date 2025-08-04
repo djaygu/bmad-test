@@ -1,25 +1,24 @@
-import { Effect, Layer, Context } from "effect"
-import { Schema } from "@effect/schema"
+import { Effect } from "effect"
+import type {
+  AppConfig} from "@/types/domain/Configuration";
 import {
-  AppConfig,
   DEFAULT_CONFIG,
   validateConfiguration,
   validateThetaDataUrl,
   validateDate,
   validateDirectoryPath,
   validateDatabasePath
-} from "../../types/domain/Configuration"
+} from "@/types/domain/Configuration"
 import {
   ConfigurationDatabaseLayer,
   setConfiguration,
   getConfiguration,
   getAllConfiguration,
-  getConfigurationWithDefault,
   initializeConfigurationDatabase,
-  setMultipleConfigurations,
   resetToDefaults
-} from "../../infrastructure/database/ConfigurationRepository"
-import { ConfigurationError, ConfigurationValidationError, fromSchemaError } from "../../types/errors/ConfigurationError"
+} from "@infrastructure/database/ConfigurationRepository"
+import type { ConfigurationError} from "@/types/errors/ConfigurationError";
+import { ConfigurationValidationError, fromSchemaError } from "@/types/errors/ConfigurationError"
 
 // Configuration keys enum for type safety
 export const ConfigKeys = {
@@ -59,7 +58,7 @@ const validateByKey = (key: ConfigKey, value: string): Effect.Effect<void, Confi
         Effect.asVoid,
         Effect.mapError((error) => fromSchemaError(key, value, error))
       )
-    case ConfigKeys.THETADATA_MAX_CONCURRENT_REQUESTS:
+    case ConfigKeys.THETADATA_MAX_CONCURRENT_REQUESTS: {
       const numValue = parseInt(value, 10)
       if (isNaN(numValue) || numValue < 1 || numValue > 10) {
         return Effect.fail(ConfigurationValidationError(
@@ -69,6 +68,7 @@ const validateByKey = (key: ConfigKey, value: string): Effect.Effect<void, Confi
         ))
       }
       return Effect.void
+    }
     default:
       return Effect.fail(ConfigurationValidationError(key, value, "Unknown configuration key"))
   }
@@ -89,20 +89,20 @@ const deserializeConfig = (configData: Record<string, string>): Effect.Effect<Ap
   Effect.gen(function* () {
     const configObject = {
       thetaData: {
-        baseUrl: configData[ConfigKeys.THETADATA_BASE_URL] || DEFAULT_CONFIG.thetaData.baseUrl,
+        baseUrl: configData[ConfigKeys.THETADATA_BASE_URL] ?? DEFAULT_CONFIG.thetaData.baseUrl,
         maxConcurrentRequests: parseInt(
-          configData[ConfigKeys.THETADATA_MAX_CONCURRENT_REQUESTS] || 
+          configData[ConfigKeys.THETADATA_MAX_CONCURRENT_REQUESTS] ?? 
           DEFAULT_CONFIG.thetaData.maxConcurrentRequests.toString(), 
           10
         )
       },
       processing: {
-        startDate: configData[ConfigKeys.PROCESSING_START_DATE] || DEFAULT_CONFIG.processing.startDate,
-        outputDirectory: configData[ConfigKeys.PROCESSING_OUTPUT_DIRECTORY] || DEFAULT_CONFIG.processing.outputDirectory,
-        tempDirectory: configData[ConfigKeys.PROCESSING_TEMP_DIRECTORY] || DEFAULT_CONFIG.processing.tempDirectory
+        startDate: configData[ConfigKeys.PROCESSING_START_DATE] ?? DEFAULT_CONFIG.processing.startDate,
+        outputDirectory: configData[ConfigKeys.PROCESSING_OUTPUT_DIRECTORY] ?? DEFAULT_CONFIG.processing.outputDirectory,
+        tempDirectory: configData[ConfigKeys.PROCESSING_TEMP_DIRECTORY] ?? DEFAULT_CONFIG.processing.tempDirectory
       },
       database: {
-        path: configData[ConfigKeys.DATABASE_PATH] || DEFAULT_CONFIG.database.path
+        path: configData[ConfigKeys.DATABASE_PATH] ?? DEFAULT_CONFIG.database.path
       }
     }
 
@@ -121,9 +121,18 @@ export const getFullConfiguration = Effect.gen(function* () {
     return acc
   }, {})
 
-  // If no configuration exists, return defaults
+  // If no configuration exists, return validated defaults
   if (Object.keys(configData).length === 0) {
-    return DEFAULT_CONFIG
+    const defaultConfig = {
+      ...DEFAULT_CONFIG,
+      processing: {
+        ...DEFAULT_CONFIG.processing,
+        startDate: new Date(DEFAULT_CONFIG.processing.startDate)
+      }
+    }
+    return yield* validateConfiguration(defaultConfig).pipe(
+      Effect.mapError((error) => fromSchemaError("defaultConfig", JSON.stringify(defaultConfig), error))
+    )
   }
 
   return yield* deserializeConfig(configData)
@@ -141,7 +150,14 @@ export const validateConfigurationValue = validateByKey
 
 export const resetConfiguration = () =>
   Effect.gen(function* () {
-    const defaultFlat = serializeConfig(DEFAULT_CONFIG)
+    const defaultConfig = {
+      ...DEFAULT_CONFIG,
+      processing: {
+        ...DEFAULT_CONFIG.processing,
+        startDate: new Date(DEFAULT_CONFIG.processing.startDate)
+      }
+    }
+    const defaultFlat = serializeConfig(defaultConfig)
     yield* resetToDefaults(defaultFlat)
   })
 

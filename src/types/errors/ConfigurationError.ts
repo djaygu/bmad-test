@@ -1,4 +1,5 @@
-import { Schema, TreeFormatter, ParseResult } from "@effect/schema"
+import type { ParseResult } from "@effect/schema";
+import { TreeFormatter } from "@effect/schema"
 
 // Configuration-specific error types
 export type ConfigurationError =

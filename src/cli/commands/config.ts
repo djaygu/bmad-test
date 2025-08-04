@@ -2,22 +2,35 @@ import { Effect } from "effect"
 import * as Command from "@effect/cli/Command"
 import * as Options from "@effect/cli/Options"
 import * as Args from "@effect/cli/Args"
+import type {
+  ConfigKey} from "@cli/config/ConfigurationService";
 import { 
   ConfigKeys,
-  ConfigKey,
   ConfigurationServiceLayer,
   setConfigurationValue,
   getConfigurationValue,
   getFullConfiguration,
   resetConfiguration,
   validateFullConfiguration
-} from "../config/ConfigurationService"
+} from "@cli/config/ConfigurationService"
 import { DEFAULT_CONFIG } from "../../types/domain/Configuration"
+import type { AppConfig } from "../../types/domain/Configuration"
+import { validateConfigurationComprehensive } from "../../types/domain/ConfigurationValidation"
 
 // CLI output formatting
 const formatKeyValue = (key: string, value: string) => `${key} = ${value}`
 
-const formatFullConfiguration = (config: any) => {
+// Helper to convert DEFAULT_CONFIG to AppConfig format
+const defaultConfigToAppConfig = (): AppConfig => ({
+  thetaData: DEFAULT_CONFIG.thetaData,
+  processing: {
+    ...DEFAULT_CONFIG.processing,
+    startDate: new Date(DEFAULT_CONFIG.processing.startDate)
+  },
+  database: DEFAULT_CONFIG.database
+})
+
+const formatFullConfiguration = (config: AppConfig) => {
   const lines = [
     "Current Configuration:",
     "",
@@ -26,7 +39,7 @@ const formatFullConfiguration = (config: any) => {
     `  maxConcurrentRequests = ${config.thetaData.maxConcurrentRequests}`,
     "",
     "[Processing]", 
-    `  startDate = ${config.processing.startDate}`,
+    `  startDate = ${config.processing.startDate.toISOString().split('T')[0]}`,
     `  outputDirectory = ${config.processing.outputDirectory}`,
     `  tempDirectory = ${config.processing.tempDirectory}`,
     "",
@@ -121,21 +134,50 @@ export const configGetCommand = Command.make("get",
   Command.withDescription("Get configuration value(s)")
 )
 
+// Additional validation options
+const strictValidationOption = Options.boolean("strict").pipe(
+  Options.withDefault(false),
+  Options.withDescription("Enable strict validation (business days, connectivity checks)")
+)
+
+const autoCreateDirsOption = Options.boolean("auto-create-dirs").pipe(
+  Options.withDefault(false),
+  Options.withDescription("Automatically create missing directories")
+)
+
 // Config Validate Command
 export const configValidateCommand = Command.make("validate", 
-  { database: databasePathOption },
-  ({ database }) =>
+  { 
+    database: databasePathOption,
+    strict: strictValidationOption,
+    autoCreateDirs: autoCreateDirsOption
+  },
+  ({ database, strict, autoCreateDirs }) =>
     Effect.gen(function* () {
       const config = yield* validateFullConfiguration.pipe(
         Effect.provide(ConfigurationServiceLayer(database)),
         Effect.mapError((error) => new Error(String(error)))
       )
       
-      console.log("✓ Configuration is valid")
+      console.log("✓ Basic configuration is valid")
+      
+      // Apply enhanced validation if requested
+      if (strict || autoCreateDirs) {
+        console.log("\nPerforming enhanced validation...")
+        yield* validateConfigurationComprehensive(config, {
+          checkConnectivity: strict,
+          validateBusinessDays: strict,
+          autoCreateDirectories: autoCreateDirs
+        }).pipe(
+          Effect.mapError((error) => new Error(String(error)))
+        )
+        console.log("✓ Enhanced validation passed")
+      }
+      
       console.log(formatFullConfiguration(config))
     })
 ).pipe(
-  Command.withDescription("Validate current configuration")
+  Command.withDescription("Validate current configuration with optional enhanced checks")
 )
 
 // Config Reset Command
@@ -149,7 +191,7 @@ export const configResetCommand = Command.make("reset",
       )
       
       console.log("✓ Configuration reset to defaults")
-      console.log(formatFullConfiguration(DEFAULT_CONFIG))
+      console.log(formatFullConfiguration(defaultConfigToAppConfig()))
     })
 ).pipe(
   Command.withDescription("Reset configuration to default values")

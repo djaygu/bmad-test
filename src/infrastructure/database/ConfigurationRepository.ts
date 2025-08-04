@@ -1,11 +1,11 @@
-import { Effect, Config, Layer } from "effect"
+import { Effect } from "effect"
 import { SqlClient } from "@effect/sql/SqlClient"
 import * as SqliteClient from "@effect/sql-sqlite-bun/SqliteClient"
 import { 
   DatabaseConnectionError, 
   ConfigurationPersistenceError,
   ConfigurationNotFoundError 
-} from "../../types/errors/ConfigurationError"
+} from "@/types/errors/ConfigurationError"
 
 // Configuration record interface
 export interface ConfigurationRecord {
@@ -39,8 +39,8 @@ export const getConfiguration = (key: string) =>
       return yield* Effect.fail(ConfigurationNotFoundError(key))
     }
     
-    const row = Array.isArray(rows) ? rows[0] : rows
-    return (row as any).value as string
+    const row = (Array.isArray(rows) ? rows[0] : rows) as {value: string}
+    return row.value
   }).pipe(
     Effect.mapError((error) => 
       error._tag === "ConfigurationNotFoundError" 
@@ -75,10 +75,10 @@ export const getAllConfiguration = Effect.gen(function* () {
   }
   
   const configArray = Array.isArray(rows) ? rows : [rows]
-  return configArray.map((row: any) => ({
-    key: row.key as string,
-    value: row.value as string,
-    updated_at: row.updated_at as string
+  return configArray.map((row) => ({
+    key: (row as {key: string}).key,
+    value: (row as {value: string}).value,
+    updated_at: (row as {updated_at: string}).updated_at
   }))
 }).pipe(
   Effect.mapError((error) => ConfigurationPersistenceError("getAll", error))
