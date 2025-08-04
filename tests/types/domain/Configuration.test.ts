@@ -1,5 +1,4 @@
-// @ts-nocheck - Temporary suppression for bun:test module resolution during Bun migration
-import { describe, it, expect } from 'bun:test'
+import { describe, it, expect } from 'vitest'
 import { Effect, Either } from 'effect'
 import { 
   DEFAULT_CONFIG, 

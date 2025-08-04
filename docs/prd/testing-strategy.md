@@ -2,7 +2,7 @@
 
 ## Test-Driven Development Approach
 
-The SPX Options Data Pipeline Tool will be developed using strict TDD methodology with the Red-Green-Refactor cycle:
+The SPX Options Data Pipeline Tool will be developed using strict TDD methodology with the Red-Green-Refactor cycle, implemented using **Vitest** as the primary testing framework for enhanced debugging and watch capabilities:
 
 1. **Red Phase**: Write failing tests that describe desired functionality
 2. **Green Phase**: Implement minimal code to make tests pass

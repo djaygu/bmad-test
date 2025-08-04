@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, spyOn } from 'bun:test'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { Effect } from 'effect'
 import { Command } from "@effect/cli"
 import {
@@ -26,7 +26,7 @@ describe('Database CLI Commands', () => {
     
     // Spy on console.log to capture command output
     originalConsoleLog = console.log
-    logSpy = spyOn(console, 'log').mockImplementation(() => {})
+    logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
   })
   
   afterEach(async () => {

@@ -1,5 +1,4 @@
-// @ts-nocheck - Temporary suppression for Effect type mismatches during Bun migration
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { Effect } from 'effect'
 import {
   ConfigurationDatabaseLayer,

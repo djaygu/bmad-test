@@ -25,6 +25,7 @@ The system leverages Effect-TS's error handling, resource management, and concur
 - **SQLite**: Local metadata and status tracking database
 
 ### Development & Testing
+- **Vitest**: Modern testing framework with Effect-TS integration, watch mode, and debugging support
 - **TDD with Effect**: Test-driven development using Effect's testing utilities
 - **Property Testing**: Data validation with fast-check generators
 - **Integration Testing**: End-to-end pipeline validation with mock APIs

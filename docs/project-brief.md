@@ -208,6 +208,7 @@ The MVP is successful when a user can: manually start ThetaTerminal.jar with cre
 
 ### Testing Strategy
 
+- **Testing Framework**: Vitest with Effect-TS integration for enhanced debugging and watch capabilities
 - **TDD Approach**: All Effect-TS pipeline components developed using Red-Green-Refactor cycle
 - **Integration Testing**: API client with mock responses and retry scenarios  
 - **Property Testing**: Data integrity validation with fast-check generators

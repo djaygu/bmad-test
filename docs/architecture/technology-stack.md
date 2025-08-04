@@ -17,6 +17,7 @@
 
 ## Development & Testing
 
+- **Vitest** - Modern testing framework with Effect-TS integration, watch mode, and debugging support
 - **TDD with Effect** - Test-driven development using Effect's testing utilities
-- **Property Testing** - Data validation with generated test cases
+- **Property Testing** - Data validation with generated test cases using fast-check
 - **Integration Testing** - End-to-end pipeline validation with mock APIs

@@ -1,5 +1,9 @@
 # Testing Strategy
 
+## TDD with Effect-TS and Vitest
+
+**Testing Framework**: Vitest with Effect-TS integration for enhanced debugging and watch capabilities.
+
 ## TDD with Effect-TS
 
 ```typescript
