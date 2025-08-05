@@ -54,7 +54,7 @@ describe('Database CLI Commands', () => {
       const output = logSpy.mock.calls.map((call: any) => call[0]).join('\n')
       expect(output).toContain('Database Status:')
       expect(output).toContain('✗ configuration')
-      expect(output).toContain('0/1 tables exist, 0 total rows')
+      expect(output).toContain('0/3 tables exist, 0 total rows')
     })
 
     it('should show table status with row counts when tables exist', async () => {
@@ -79,7 +79,7 @@ describe('Database CLI Commands', () => {
 
       const output = logSpy.mock.calls.map((call: any) => call[0]).join('\n')
       expect(output).toContain('✓ configuration (1 rows)')
-      expect(output).toContain('1/1 tables exist, 1 total rows')
+      expect(output).toContain('3/3 tables exist, 1 total rows')
     })
 
     it('should handle custom database path', async () => {
@@ -116,8 +116,8 @@ describe('Database CLI Commands', () => {
       const output = logSpy.mock.calls.map((call: any) => call[0]).join('\n')
       expect(output).toContain('Initializing database:')
       expect(output).toContain('✗ configuration: missing')
-      expect(output).toContain('Creating 1 missing table(s)')
-      expect(output).toContain('✅ Created tables: configuration')
+      expect(output).toContain('Creating 3 missing table(s)')
+      expect(output).toContain('✅ Created tables: configuration, processing_log, error_log')
     })
 
     it('should preserve existing data during initialization', async () => {

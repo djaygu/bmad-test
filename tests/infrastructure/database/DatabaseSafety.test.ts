@@ -274,7 +274,7 @@ describe('Database Safety and Edge Cases', () => {
         )
       )
 
-      expect(status).toHaveLength(1)
+      expect(status).toHaveLength(3)
       expect(status[0].exists).toBe(false)
       expect(status[0].rowCount).toBe(0)
 
@@ -285,7 +285,7 @@ describe('Database Safety and Edge Cases', () => {
         )
       )
 
-      expect(result.created).toEqual(['configuration'])
+      expect(result.created).toEqual(['configuration', 'processing_log', 'error_log'])
     })
 
     it('should handle very large datasets during force initialization', async () => {
@@ -413,7 +413,7 @@ describe('Database Safety and Edge Cases', () => {
       }
 
       // First run should create tables
-      expect(results[0].created).toEqual(['configuration'])
+      expect(results[0].created).toEqual(['configuration', 'processing_log', 'error_log'])
       expect(results[0].skipped).toEqual([])
 
       // Subsequent runs should do nothing

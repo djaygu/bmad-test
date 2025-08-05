@@ -2,6 +2,7 @@ import { Effect } from "effect"
 import { SqlClient } from "@effect/sql/SqlClient"
 import { DatabaseConnectionError } from "@/types/errors/ConfigurationError"
 import { createConfigurationTable } from "@infrastructure/database/ConfigurationRepository"
+import { createProcessingLogTable, createErrorLogTable } from "@infrastructure/database/ProcessingLogRepository"
 
 // Table verification interface
 export interface TableInfo {
@@ -42,7 +43,7 @@ export const checkTableStatus = (tableName: string) =>
 
 // Get status of all application tables
 export const getDatabaseStatus = Effect.gen(function* () {
-  const tables = ["configuration"] // Add other table names here as they're created
+  const tables = ["configuration", "processing_log", "error_log"] // Add other table names here as they're created
   
   const statuses = yield* Effect.all(
     tables.map(tableName => checkTableStatus(tableName))
@@ -91,7 +92,8 @@ export const initializeTablesIfNeeded = Effect.gen(function* () {
   
   // Create tables (these use CREATE TABLE IF NOT EXISTS)
   yield* createConfigurationTable
-  // Add other table creation calls here
+  yield* createProcessingLogTable
+  yield* createErrorLogTable
   
   console.log("✓ Database initialization completed")
   return { 
@@ -124,15 +126,17 @@ export const forceInitializeAllTables = Effect.gen(function* () {
   // Recreate all tables
   console.log("\n🔨 Creating fresh tables...")
   yield* createConfigurationTable
-  // Add other table creation calls here
+  yield* createProcessingLogTable
+  yield* createErrorLogTable
   
   console.log("✓ Force initialization completed - all tables recreated")
 })
 
 // Export table creation registry for extensibility
 export const TABLE_CREATORS = {
-  configuration: createConfigurationTable
-  // Add other table creators here as they're implemented
+  configuration: createConfigurationTable,
+  processing_log: createProcessingLogTable,
+  error_log: createErrorLogTable
 } as const
 
 export type TableName = keyof typeof TABLE_CREATORS

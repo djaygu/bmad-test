@@ -86,10 +86,12 @@ describe('DatabaseInitialization', () => {
       )
 
       expect(Array.isArray(statuses)).toBe(true)
-      expect(statuses).toHaveLength(1) // Currently only configuration table
+      expect(statuses).toHaveLength(3) // configuration, processing_log, error_log tables
       expect(statuses[0].name).toBe('configuration')
       expect(statuses[0].exists).toBe(false)
       expect(statuses[0].rowCount).toBe(0)
+      expect(statuses[1].name).toBe('processing_log')
+      expect(statuses[2].name).toBe('error_log')
     })
 
     it('should return correct status after tables are created', async () => {
@@ -106,7 +108,7 @@ describe('DatabaseInitialization', () => {
         )
       )
 
-      expect(statuses).toHaveLength(1)
+      expect(statuses).toHaveLength(3)
       expect(statuses[0].name).toBe('configuration')
       expect(statuses[0].exists).toBe(true)
       expect(statuses[0].rowCount).toBe(0)
@@ -121,7 +123,7 @@ describe('DatabaseInitialization', () => {
         )
       )
 
-      expect(result.created).toEqual(['configuration'])
+      expect(result.created).toEqual(['configuration', 'processing_log', 'error_log'])
       expect(result.skipped).toEqual([])
 
       // Verify table was actually created
@@ -353,7 +355,7 @@ describe('DatabaseInitialization', () => {
           Effect.provide(testLayer)
         )
       )
-      expect(result.created).toEqual(['configuration'])
+      expect(result.created).toEqual(['configuration', 'processing_log', 'error_log'])
 
       // 3. Add some data
       await Effect.runPromise(

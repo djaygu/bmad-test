@@ -5,6 +5,8 @@ import { NodeContext, NodeRuntime } from "@effect/platform-node"
 import { Effect } from "effect"
 import { configCommand } from "@cli/commands/config"
 import { databaseCommand } from "@cli/commands/database"
+import { statusCommand } from "@cli/commands/status"
+import { listCommand } from "@cli/commands/list"
 
 // Main CLI Application
 const cliApp = Command.make("spx-data", {}, () => 
@@ -14,7 +16,7 @@ const cliApp = Command.make("spx-data", {}, () =>
   })
 ).pipe(
   Command.withDescription("SPX Options Data Pipeline Tool"),
-  Command.withSubcommands([configCommand, databaseCommand])
+  Command.withSubcommands([configCommand, databaseCommand, statusCommand, listCommand])
 )
 
 // Initialize and run the CLI application
